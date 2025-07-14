@@ -18,6 +18,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
 
+      - name: Install uv
+        run: |
+          pip install pipx
+          pipx install uv
+
       - name: Setup project
         run: make install
 
