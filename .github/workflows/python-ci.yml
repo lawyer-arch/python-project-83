@@ -19,9 +19,7 @@ jobs:
         uses: actions/setup-python@v5
 
       - name: Setup project
-        run: |
-          pip install poetry
-          make install
+        run: make install
 
   deploy:
     needs: build
