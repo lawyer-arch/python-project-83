@@ -20,8 +20,9 @@ jobs:
 
       - name: Install uv
         run: |
-          pip install pipx
-          pipx install uv
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          echo "$HOME/.cargo/bin" >> $GITHUB_ENV
 
       - name: Setup project
         run: make install
