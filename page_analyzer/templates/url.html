@@ -15,6 +15,40 @@
     <dt class="col-sm-3">Дата добавления</dt>
     <dd class="col-sm-9">{{ url[2] }}</dd>
   </dl>
+
   <a href="{{ url_for('urls') }}" class="btn btn-secondary">Назад к списку URL</a>
+
+  <!-- Таблица проверок -->
+  <h3 class="mt-5">Проверки</h3>
+  <table class="table table-bordered table-hover mt-2" data-test="checks">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Код ответа</th>
+        <th>h1</th>
+        <th>title</th>
+        <th>description</th>
+        <th>Дата создания</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for check in checks %}
+        <tr>
+          <td>{{ check.id }}</td>
+          <td>{{ check.status_code }}</td>
+          <td>{{ check.h1 }}</td>
+          <td>{{ check.title }}</td>
+          <td>{{ check.description }}</td>
+          <td>{{ check.created_at }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
+
+<!-- Форма запуска проверки -->
+<form method="post" action="{{ url_for('check_url', id=url[0]) }}" class="mt-4">
+  <input type="submit" class="btn btn-primary" value="Запустить проверку">
+</form>
+
 {% endblock %}
