@@ -12,7 +12,7 @@ dependencies = [
   "python-dotenv>=0.21.0",
   "requests>=2.32.4",
   "validators>=0.35.0",
-  beautifulsoup4 = "*"
+  "beautifulsoup4"
 ]
 
 [tool.uv]
