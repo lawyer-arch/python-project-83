@@ -1,5 +1,5 @@
 curl -LsSf https://astral.sh/uv/install.sh | sh
-source $HOME/.local/bin/env
+. $HOME/.local/bin/env
 make install
 
 echo ">>> Начинаю загрузку database.sql"
