@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>Добавленные URL</h2>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <table class="table table-bordered" data-test="urls">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>URL</th>
+        <th>Дата добавления</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for url in urls %}
+      <tr>
+        <td>{{ url[0] }}</td>
+        <td><a href="{{ url_for('url_detail', id=url[0]) }}">{{ url[1] }}</a></td>
+        <td>{{ url[2] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{{ url_for('index') }}" class="btn btn-primary">Добавить новый URL</a>
+</div>
+{% endblock %}
