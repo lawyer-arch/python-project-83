@@ -51,10 +51,10 @@ def index():
         try:
             url_id = add_url(url_input)
             if url_id:
-                flash('URL успешно добавлен', 'success')
+                flash('Страница успешно добавлена', 'success')
                 return redirect(url_for('show_url', id=url_id))
             else:
-                flash('Этот URL уже добавлен', 'warning')
+                flash('Эта страница уже добавлена', 'warning')
         except ValueError as e:
             flash(str(e), 'danger')
         return redirect(url_for('index'))
@@ -91,7 +91,7 @@ def show_url(id):
             cur.execute('SELECT * FROM urls WHERE id = %s', (id,))
             url = cur.fetchone()
             if not url:
-                flash('URL не найден', 'danger')
+                flash('Страница не найдена', 'danger')
                 return redirect(url_for('urls'))
 
             cur.execute('''
