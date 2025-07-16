@@ -51,10 +51,10 @@ def index():
         try:
             url_id = add_url(url_input)
             if url_id:
-                flash('Страница успешно добавлена', 'success')
+                flash('Страница успешно проверена', 'success')
                 return redirect(url_for('show_url', id=url_id))
             else:
-                flash('Эта страница уже добавлена', 'warning')
+                flash('Страница уже существует', 'warning')
         except ValueError as e:
             flash(str(e), 'danger')
         return redirect(url_for('index'))
