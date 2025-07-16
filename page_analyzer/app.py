@@ -111,7 +111,6 @@ def check_url(id):
         conn = get_connection()
         with conn:
             with conn.cursor() as cur:
-                
                 cur.execute("SELECT name FROM urls WHERE id = %s", (id,))
                 url_data = cur.fetchone()
                 if not url_data:
@@ -122,12 +121,23 @@ def check_url(id):
                 try:
                     response = requests.get(url)
                     response.raise_for_status()
-
+                    
                   
+                    soup = BeautifulSoup(response.text, 'html.parser')
+                    
+                 
+                    h1 = soup.find('h1')
+                    title = soup.find('title')
+                    description = soup.find('meta', attrs={'name': 'description'})
+                    
+                    h1_text = h1.text.strip() if h1 else None
+                    title_text = title.text.strip() if title else None
+                    description_text = description['content'].strip() if description else None
+                    
                     cur.execute(
-                        '''INSERT INTO url_checks (url_id, status_code, created_at)
-                           VALUES (%s, %s, %s)''',
-                        (id, response.status_code, datetime.now())
+                        '''INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
+                           VALUES (%s, %s, %s, %s, %s, %s)''',
+                        (id, response.status_code, h1_text, title_text, description_text, datetime.now())
                     )
                     flash('Проверка успешно добавлена', 'success')
 

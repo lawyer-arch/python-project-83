@@ -13,3 +13,4 @@ CREATE TABLE IF NOT EXISTS url_checks (
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
