@@ -25,10 +25,12 @@ def add_url(url: str) -> tuple[int, bool]:
         raise ValueError("Невалидный URL")
 
     parsed = urlparse(url)
-    path = parsed.path.rstrip('/')
-    normalized_url = f"{parsed.scheme}://{parsed.netloc}{path}"
+    path = parsed.path
     if not path:
-        normalized_url += '/'
+        path = '/'
+    elif not path.endswith('/'):
+        path += '/'
+    normalized_url = f"{parsed.scheme}://{parsed.netloc}{path}"
 
     conn = get_connection()
     with conn:
