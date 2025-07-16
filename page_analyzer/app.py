@@ -139,7 +139,7 @@ def check_url(id):
                            VALUES (%s, %s, %s, %s, %s, %s)''',
                         (id, response.status_code, h1_text, title_text, description_text, datetime.now())
                     )
-                    flash('Проверка успешно добавлена', 'success')
+                    flash('Проверка успешно проверена', 'success')
 
                 except requests.exceptions.HTTPError as e:
                     if 500 <= response.status_code < 600:
