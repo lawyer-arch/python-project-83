@@ -18,20 +18,28 @@
 
   <table class="table table-bordered" data-test="urls">
     <thead>
-      <tr>
-        <th>ID</th>
-        <th>URL</th>
-        <th>Дата добавления</th>
-      </tr>
+        <tr>
+            <th>ID</th>
+            <th>URL</th>
+            <th>Дата добавления</th>
+            <th>Код ответа</th>
+        </tr>
     </thead>
     <tbody>
-      {% for url in urls %}
-      <tr>
-        <td>{{ url[0] }}</td>
-        <td><a href="{{ url_for('show_url', id=url[0]) }}">{{ url[1] }}</a></td>
-        <td>{{ url[2] }}</td>
-      </tr>
-      {% endfor %}
+        {% for url in urls %}
+        <tr>
+            <td>{{ url[0] }}</td>
+            <td><a href="{{ url_for('show_url', id=url[0]) }}">{{ url[1] }}</a></td>
+            <td>{{ url[2] }}</td>
+            <td>
+                {% if url[4] %}
+                    {{ url[4] }}
+                {% else %}
+                    Нет данных
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
     </tbody>
   </table>
 

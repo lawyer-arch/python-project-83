@@ -22,28 +22,22 @@
   <h3 class="mt-5">Проверки</h3>
   <table class="table table-bordered table-hover mt-2" data-test="checks">
     <thead>
-      <tr>
-        <th>ID</th>
-        <th>Код ответа</th>
-        <th>h1</th>
-        <th>title</th>
-        <th>description</th>
-        <th>Дата создания</th>
-      </tr>
+        <tr>
+            <th>ID</th>
+            <th>Код ответа</th>
+            <th>Дата создания</th>
+        </tr>
     </thead>
     <tbody>
-      {% for check in checks %}
+        {% for check in checks %}
         <tr>
-          <td>{{ check.id }}</td>
-          <td>{{ check.status_code }}</td>
-          <td>{{ check.h1 }}</td>
-          <td>{{ check.title }}</td>
-          <td>{{ check.description }}</td>
-          <td>{{ check.created_at }}</td>
+            <td>{{ check.id }}</td>
+            <td>{{ check.status_code }}</td>
+            <td>{{ check.created_at }}</td>
         </tr>
-      {% endfor %}
+        {% endfor %}
     </tbody>
-  </table>
+</table>
 </div>
 
 <!-- Форма запуска проверки -->

@@ -72,7 +72,8 @@ def urls():
                     urls.id,
                     urls.name,
                     urls.created_at,
-                    MAX(url_checks.created_at) AS last_check_date
+                    MAX(url_checks.created_at) AS last_check_date,
+                    MAX(url_checks.status_code) AS last_status_code
                 FROM urls
                 LEFT JOIN url_checks ON urls.id = url_checks.url_id
                 GROUP BY urls.id
@@ -106,42 +107,38 @@ def show_url(id):
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
 def check_url(id):
-    conn = get_connection()
-    with conn:
-        with conn.cursor() as cur:
-            # Получаем URL по id
-            cur.execute("SELECT name FROM urls WHERE id = %s", (id,))
-            url_data = cur.fetchone()
-            if not url_data:
-                flash('URL не найден', 'danger')
-                return redirect(url_for('urls'))
+    try:
+        conn = get_connection()
+        with conn:
+            with conn.cursor() as cur:
+                
+                cur.execute("SELECT name FROM urls WHERE id = %s", (id,))
+                url_data = cur.fetchone()
+                if not url_data:
+                    flash('URL не найден', 'danger')
+                    return redirect(url_for('urls'))
 
-            url = url_data[0]
-            try:
-                response = requests.get(url)
-                response.raise_for_status()  # проверяем статус
+                url = url_data[0]
+                try:
+                    response = requests.get(url)
+                    response.raise_for_status()
 
-                # Для отладки — посмотреть первые 1000 символов ответа
-                print(response.text[:1000])
+                  
+                    cur.execute(
+                        '''INSERT INTO url_checks (url_id, status_code, created_at)
+                           VALUES (%s, %s, %s)''',
+                        (id, response.status_code, datetime.now())
+                    )
+                    flash('Проверка успешно добавлена', 'success')
 
-                # Парсим HTML
-                soup = BeautifulSoup(response.text, 'html.parser')
-
-                h1 = soup.h1.string.strip() if soup.h1 and soup.h1.string else ''
-                title = soup.title.string.strip() if soup.title and soup.title.string else ''
-
-                description_tag = soup.find('meta', attrs={'name': 'description'})
-                description = description_tag['content'].strip() if description_tag and 'content' in description_tag.attrs else ''
-
-                # Вставляем данные проверки в базу
-                cur.execute(
-                    '''INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
-                       VALUES (%s, %s, %s, %s, %s, %s)''',
-                    (id, response.status_code, h1, title, description, datetime.now())
-                )
-                flash('Проверка успешно добавлена', 'success')
-
-            except requests.RequestException:
-                flash('Произошла ошибка при проверке URL', 'danger')
+                except requests.exceptions.HTTPError as e:
+                    if 500 <= response.status_code < 600:
+                        flash('Произошла ошибка при проверке', 'danger')
+                    else:
+                        raise
+                except requests.RequestException:
+                    flash('Произошла ошибка при проверке', 'danger')
+    except Exception as e:
+        flash('Произошла ошибка при проверке', 'danger')
 
     return redirect(url_for('show_url', id=id))
