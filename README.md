@@ -34,7 +34,7 @@ git clone https://github.com/lawyer-arch/python-project-83.git
 ```
 2. Установка зависимостей:
 ```
-pip install -r requirements.txt
+pip install -r pyproject.toml
 ```
 3. Настройка базы данных:
 ```
