@@ -20,7 +20,7 @@ def get_connection():
     return psycopg2.connect(DATABASE_URL)
 
 
-def add_url(url: str):
+def add_url(url: str) -> tuple[int, bool]:
     if not validators.url(url) or len(url) > 255:
         raise ValueError("Невалидный URL")
 
@@ -33,7 +33,7 @@ def add_url(url: str):
             cur.execute("SELECT id FROM urls WHERE name = %s", (normalized_url,))
             existing = cur.fetchone()
             if existing:
-                return existing[0]
+                return existing[0], False
 
             cur.execute(
                 "INSERT INTO urls (name, created_at) VALUES (%s, %s) RETURNING id",
@@ -41,7 +41,7 @@ def add_url(url: str):
             )
             new_id = cur.fetchone()[0]
     conn.close()
-    return new_id 
+    return new_id, True
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -49,15 +49,15 @@ def index():
     if request.method == 'POST':
         url_input = request.form.get('url')
         try:
-            url_id = add_url(url_input)
-            if url_id:
+            url_id, is_new = add_url(url_input)
+            if is_new:
                 flash('Страница успешно добавлена', 'success')
-                return redirect(url_for('show_url', id=url_id))
             else:
                 flash('Страница уже существует', 'warning')
+            return redirect(url_for('show_url', id=url_id))
         except ValueError as e:
             flash(str(e), 'danger')
-        return redirect(url_for('index'))
+            return redirect(url_for('index'))
 
     return render_template('index.html')
 
