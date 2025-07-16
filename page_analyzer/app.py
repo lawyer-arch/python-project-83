@@ -25,7 +25,10 @@ def add_url(url: str) -> tuple[int, bool]:
         raise ValueError("Невалидный URL")
 
     parsed = urlparse(url)
-    normalized_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
+    path = parsed.path.rstrip('/')
+    normalized_url = f"{parsed.scheme}://{parsed.netloc}{path}"
+    if not path:
+        normalized_url += '/'
 
     conn = get_connection()
     with conn:
@@ -139,7 +142,7 @@ def check_url(id):
                            VALUES (%s, %s, %s, %s, %s, %s)''',
                         (id, response.status_code, h1_text, title_text, description_text, datetime.now())
                     )
-                    flash('Проверка успешно проверена', 'success')
+                    flash('Страница успешно проверена', 'success')
 
                 except requests.exceptions.HTTPError as e:
                     if 500 <= response.status_code < 600:
