@@ -1,13 +1,14 @@
-import requests
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
-from dotenv import load_dotenv
+from datetime import datetime
+from urllib.parse import urlparse
+
 import psycopg2
 import psycopg2.extras
-from urllib.parse import urlparse
+import requests
 import validators
-from datetime import datetime
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+from flask import Flask, flash, redirect, render_template, request, url_for
 
 load_dotenv()
 
@@ -127,10 +128,8 @@ def check_url(id):
                     response = requests.get(url)
                     response.raise_for_status()
                     
-                  
                     soup = BeautifulSoup(response.text, 'html.parser')
                     
-                 
                     h1 = soup.find('h1')
                     title = soup.find('title')
                     description = soup.find('meta', attrs={'name': 'description'})
@@ -147,13 +146,24 @@ def check_url(id):
                     flash('Страница успешно проверена', 'success')
 
                 except requests.exceptions.HTTPError as e:
-                    if 500 <= response.status_code < 600:
-                        flash('Произошла ошибка при проверке', 'danger')
-                    else:
-                        raise
-                except requests.RequestException:
-                    flash('Произошла ошибка при проверке', 'danger')
+                    error_message = f"Произошла ошибка HTTP ({e.response.status_code}): {e.response.text}"
+                    flash(error_message, 'danger')
+
+                except requests.ConnectionError:
+                    flash('Не удалось подключиться к ресурсу. Проверьте подключение к Интернету.', 'danger')
+
+                except requests.Timeout:
+                    flash('Превышено время ожидания ответа от сервера.', 'danger')
+
+                except requests.RequestException as e:
+                    flash(f'Произошла ошибка при выполнении запроса: {e}', 'danger')
+
     except Exception as e:
-        flash('Произошла ошибка при проверке', 'danger')
+        flash(f'Произошла неизвестная ошибка: {e}', 'danger')
 
     return redirect(url_for('show_url', id=id))
+
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

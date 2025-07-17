@@ -12,13 +12,10 @@ dependencies = [
   "python-dotenv>=0.21.0",
   "requests>=2.32.4",
   "validators>=0.35.0",
-  "beautifulsoup4"
+  "beautifulsoup4",
+  "ruff",
 ]
 
-[tool.uv]
-dev-dependencies = [
-  "flake8>=7.1.1"
-]
 
 [build-system]
 requires = ["setuptools", "wheel"]

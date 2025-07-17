@@ -1,6 +1,9 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/lawyer-arch/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/lawyer-arch/python-project-83/actions)
 
+### SonarQube  
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lawyer-arch_python-project-83&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lawyer-arch_python-project-83)
+
 ## Онлайн-версия
 Вы можете посмотреть приложение в действии по следующей ссылке:
 

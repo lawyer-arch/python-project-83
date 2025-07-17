@@ -23,9 +23,26 @@ jobs:
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
 
-
       - name: Setup project
         run: make install
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Lint with ruff
+        run: ruff check .
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: 
+            -Dsonar.projectKey=lawyer-arch_python-project-83
+            -Dsonar.sources=./page_analyzer
+            -Dsonar.language=python
+            -Dsonar.python.version=3
 
   deploy:
     needs: build
