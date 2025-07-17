@@ -26,12 +26,10 @@ def add_url(url: str) -> tuple[int, bool]:
         raise ValueError("Невалидный URL")
 
     parsed = urlparse(url)
-    path = parsed.path
-    if not path:
-        path = '/'
-    elif not path.endswith('/'):
-        path += '/'
-    normalized_url = f"{parsed.scheme}://{parsed.netloc}{path}"
+    
+    normalized_url = (
+        f"{parsed.scheme}://{parsed.netloc}{parsed.path or ''}"
+    )
 
     conn = get_connection()
     with conn:
@@ -168,8 +166,8 @@ def check_url(id):
                     )
                 )
 
-    except Exception as e:
-        flash(f'Произошла неизвестная ошибка: {e}', 'danger')
+    except Exception:
+        flash('Произошла ошибка при проверке', 'danger')
     finally:
         conn.close()
 
