@@ -36,14 +36,16 @@ def add_url(url: str) -> tuple[int, bool]:
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT id FROM urls WHERE name = %s", (normalized_url,))
+            cur.execute("SELECT id FROM urls WHERE name = %s", 
+                        (normalized_url,))
             existing = cur.fetchone()
             if existing:
                 return existing[0], False
 
             cur.execute(
-                "INSERT INTO urls (name, created_at) VALUES (%s, %s) RETURNING id",
-                (normalized_url, datetime.now())
+                '''INSERT INTO urls (name, created_at) 
+                   VALUES (%s, %s) RETURNING id''',
+                   (normalized_url, datetime.now())
             )
             new_id = cur.fetchone()[0]
     conn.close()
@@ -107,7 +109,6 @@ def show_url(id):
                 ORDER BY id DESC
             ''', (id,))
             checks = cur.fetchall()
-
     return render_template('url.html', url=url, checks=checks)
 
 
@@ -127,36 +128,74 @@ def check_url(id):
                 try:
                     response = requests.get(url)
                     response.raise_for_status()
-                    
+
                     soup = BeautifulSoup(response.text, 'html.parser')
-                    
+
                     h1 = soup.find('h1')
                     title = soup.find('title')
-                    description = soup.find('meta', attrs={'name': 'description'})
-                    
+                    description = soup.find(
+                        'meta', attrs={'name': 'description'}
+                    )
+
                     h1_text = h1.text.strip() if h1 else None
                     title_text = title.text.strip() if title else None
-                    description_text = description['content'].strip() if description else None
-                    
-                    cur.execute(
-                        '''INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
-                           VALUES (%s, %s, %s, %s, %s, %s)''',
-                        (id, response.status_code, h1_text, title_text, description_text, datetime.now())
+                    description_text = (
+                        description['content'].strip() if description else None
                     )
+
+                    status_code = response.status_code
+
+                    flash('Страница успешно проверена', 'success')
+
+                except requests.exceptions.RequestException as e:
+                    status_code = getattr(e.response, 'status_code', 0)
+                    h1_text = None
+                    title_text = None
+                    description_text = None
+
+                    flash(f'Ошибка при проверке страницы: {e}', 'danger')
+
+                    cur.execute(
+                        '''INSERT INTO url_checks (
+                        url_id, status_code, h1, title, description, created_at)
+                        VALUES (%s, %s, %s, %s, %s, %s)''',
+                        (
+                            id, 
+                            status_code, 
+                            h1_text, title_text, 
+                            description_text, 
+                            datetime.now()
+                        )
+                    )
+                    
                     flash('Страница успешно проверена', 'success')
 
                 except requests.exceptions.HTTPError as e:
-                    error_message = f"Произошла ошибка HTTP ({e.response.status_code}): {e.response.text}"
+                    error_message = (
+                        f"Произошла ошибка HTTP ({e.response.status_code}): "
+                        f"{e.response.text}"
+                    )
+                    
                     flash(error_message, 'danger')
 
                 except requests.ConnectionError:
-                    flash('Не удалось подключиться к ресурсу. Проверьте подключение к Интернету.', 'danger')
+                    flash(
+                        '''Не удалось подключиться к ресурсу.
+                        Проверьте подключение к Интернету.''',
+                        'danger'
+                    )
 
                 except requests.Timeout:
-                    flash('Превышено время ожидания ответа от сервера.', 'danger')
+                    flash(
+                        'Превышено время ожидания ответа от сервера.',
+                        'danger'
+                    )
 
                 except requests.RequestException as e:
-                    flash(f'Произошла ошибка при выполнении запроса: {e}', 'danger')
+                    flash(
+                        f"Произошла ошибка при выполнении запроса: {e}",
+                        "danger"
+                        )
 
     except Exception as e:
         flash(f'Произошла неизвестная ошибка: {e}', 'danger')
@@ -164,6 +203,6 @@ def check_url(id):
     return redirect(url_for('show_url', id=id))
 
 
-
 if __name__ == "__main__":
     app.run(debug=True)
+    
