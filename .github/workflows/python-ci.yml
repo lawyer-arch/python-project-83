@@ -26,6 +26,12 @@ jobs:
       - name: Setup project
         run: make install
 
+      # Добавляем очистку orphan-контейнеров здесь/ важно не забыть
+      - name: Remove orphan containers
+        run: |
+          docker-compose down -v
+          docker-compose up --remove-orphans
+
       - name: Install ruff
         run: pip install ruff
 
@@ -60,5 +66,4 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
   

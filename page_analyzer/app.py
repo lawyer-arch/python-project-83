@@ -26,11 +26,9 @@ def add_url(url: str) -> tuple[int, bool]:
         raise ValueError("Невалидный URL")
 
     parsed = urlparse(url)
+          
+    normalized_url = f"{parsed.scheme}://{parsed.netloc}"
     
-    normalized_url = (
-        f"{parsed.scheme}://{parsed.netloc}{parsed.path or ''}"
-    )
-
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
