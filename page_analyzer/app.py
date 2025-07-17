@@ -135,7 +135,9 @@ def check_url(id):
                     soup = BeautifulSoup(response.text, 'html.parser')
                     h1 = soup.find('h1')
                     title = soup.find('title')
-                    description = soup.find('meta', attrs={'name': 'description'})
+                    description = soup.find(
+                        'meta', attrs={'name': 'description'}
+                    )
 
                     h1_text = h1.text.strip() if h1 else None
                     title_text = title.text.strip() if title else None
