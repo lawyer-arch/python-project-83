@@ -26,7 +26,11 @@ jobs:
       - name: Setup project
         run: make install
 
-      # Добавляем очистку orphan-контейнеров здесь/ важно не забыть
+      # Добавляем установку docker-compose
+      - name: Set up Docker Compose
+        uses: docker/setup-compose@v2
+
+      # Теперь можно безопасно удалять orphan-контейнеры
       - name: Remove orphan containers
         run: |
           docker-compose down -v
