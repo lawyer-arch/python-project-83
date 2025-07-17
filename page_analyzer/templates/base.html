@@ -10,6 +10,14 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
     crossorigin="anonymous"
   />
+  <style>
+    /* Стили для всплывающих сообщений */
+    .full-width-message {
+      position: relative; /* относительная позиция */
+      width: 100%; /* занимает всю ширину */
+      margin-bottom: 2rem; /* небольшой отступ снизу */
+    }
+  </style>
 </head>
 <body class="min-vh-100 d-flex flex-column">
 
@@ -22,19 +30,21 @@
   </div>
 </nav>
 
+<!-- Контейнер сообщений -->
+<div class="full-width-message">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} w-100 text-left p-3 mb-0" role="alert">
+        {{ message }}
+      </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
 <main class="flex-grow-1">
   <div class="container-lg mt-3">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-    
     {% block content %}{% endblock %}
   </div>
 </main>

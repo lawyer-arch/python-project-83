@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container mt-5" data-test="url">
-  <h2>Детальная информация по URL</h2>
+  <h2>Сайт: {{ url[1] }}</h2>
   <dl class="row">
     <dt class="col-sm-3">ID</dt>    
     <dd class="col-sm-9">{{ url[0] }}</dd>
@@ -15,6 +15,7 @@
     <dt class="col-sm-3">Дата добавления</dt>
     <dd class="col-sm-9">{{ url[2] }}</dd>
   </dl>
+
 
   <!-- Таблица проверок -->
   <h3 class="mt-5">Проверки</h3>
