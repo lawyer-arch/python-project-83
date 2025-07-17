@@ -114,91 +114,62 @@ def show_url(id):
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
 def check_url(id):
+    conn = get_connection()
     try:
-        conn = get_connection()
         with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT name FROM urls WHERE id = %s", (id,))
                 url_data = cur.fetchone()
+
                 if not url_data:
                     flash('URL не найден', 'danger')
                     return redirect(url_for('urls'))
 
                 url = url_data[0]
+
                 try:
-                    response = requests.get(url)
+                    response = requests.get(url, timeout=10)
                     response.raise_for_status()
+                    status_code = response.status_code
 
                     soup = BeautifulSoup(response.text, 'html.parser')
-
                     h1 = soup.find('h1')
                     title = soup.find('title')
-                    description = soup.find(
-                        'meta', attrs={'name': 'description'}
-                    )
+                    description = soup.find('meta', attrs={'name': 'description'})
 
                     h1_text = h1.text.strip() if h1 else None
                     title_text = title.text.strip() if title else None
                     description_text = (
                         description['content'].strip() if description else None
                     )
-
-                    status_code = response.status_code
-
                     flash('Страница успешно проверена', 'success')
 
-                except requests.exceptions.RequestException as e:
+                except requests.RequestException as e:
                     status_code = getattr(e.response, 'status_code', 0)
                     h1_text = None
                     title_text = None
                     description_text = None
+                    flash('Произошла ошибка при проверке', 'danger')
 
-                    flash(f'Ошибка при проверке страницы: {e}', 'danger')
-
-                    cur.execute(
-                        '''INSERT INTO url_checks (
-                        url_id, status_code, h1, title, description, created_at)
-                        VALUES (%s, %s, %s, %s, %s, %s)''',
-                        (
-                            id, 
-                            status_code, 
-                            h1_text, title_text, 
-                            description_text, 
-                            datetime.now()
-                        )
+                cur.execute(
+                    '''
+                    INSERT INTO url_checks (url_id, 
+                    status_code, h1, title, description, created_at)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    ''',
+                    (
+                        id,
+                        status_code,
+                        h1_text, title_text,
+                        description_text,
+                        datetime.now()
                     )
-                    
-                    flash('Страница успешно проверена', 'success')
-
-                except requests.exceptions.HTTPError as e:
-                    error_message = (
-                        f"Произошла ошибка HTTP ({e.response.status_code}): "
-                        f"{e.response.text}"
-                    )
-                    
-                    flash(error_message, 'danger')
-
-                except requests.ConnectionError:
-                    flash(
-                        '''Не удалось подключиться к ресурсу.
-                        Проверьте подключение к Интернету.''',
-                        'danger'
-                    )
-
-                except requests.Timeout:
-                    flash(
-                        'Превышено время ожидания ответа от сервера.',
-                        'danger'
-                    )
-
-                except requests.RequestException as e:
-                    flash(
-                        f"Произошла ошибка при выполнении запроса: {e}",
-                        "danger"
-                        )
+                )
 
     except Exception as e:
         flash(f'Произошла неизвестная ошибка: {e}', 'danger')
+    finally:
+        conn.close()
 
     return redirect(url_for('show_url', id=id))
 
