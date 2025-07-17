@@ -14,6 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -22,17 +24,23 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install -r pyproject.toml
           pip install pytest pytest-cov
 
-      - name: Run Tests and Coverage
+      # Запускаем тесты с покрытием, генерируем coverage.xml
+      - name: Run Tests and Generate Coverage Report
         run: |
           pytest --cov=page_analyzer --cov-report=xml
 
+      # Запускаем анализ SonarCloud, передаем необходимые параметры и секретный токен
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
           projectKey: lawyer-arch_python-project-83
           organization: lawyer-arch
+          # если нужно, можно указать дополнительные параметры, например, для coverage:
+          # args: >
+          #   -Dsonar.python.coverage.reportPaths=coverage.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
