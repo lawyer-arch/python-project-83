@@ -23,7 +23,7 @@ def get_connection():
 
 def add_url(url: str) -> tuple[int, bool]:
     if not validators.url(url) or len(url) > 255:
-        raise ValueError("Невалидный URL")
+        raise ValueError("Произошла ошибка при проверке")
 
     parsed = urlparse(url)
           
