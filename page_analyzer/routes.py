@@ -51,13 +51,14 @@ def urls():
 @routes.route('/urls', methods=['POST'])
 def add_url_route():
     url = request.form.get('url')
+
     if not url:
         flash('URL не может быть пустым', 'danger')
-        return render_template('urls/index.html'), 422
+        return render_template('urls.html', urls=get_all_urls()), 422
 
     if not is_valid_url(url):
         flash('Некорректный URL', 'danger')
-        return render_template('urls/index.html'), 422
+        return render_template('urls.html', urls=get_all_urls()), 422
 
     try:
         conn = get_connection()
