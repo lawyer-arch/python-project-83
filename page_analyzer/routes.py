@@ -1,5 +1,13 @@
 import requests
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    flash,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 
 from page_analyzer.data_base import (
     add_url as add_url_db,
