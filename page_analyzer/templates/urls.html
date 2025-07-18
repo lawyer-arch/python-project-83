@@ -10,8 +10,8 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>URL</th>
-            <th>Дата добавления</th>
+            <th>Имя</th>
+            <th>Последняя проверка</th>
             <th>Код ответа</th>
         </tr>
     </thead>
@@ -19,7 +19,7 @@
         {% for url in urls %}
         <tr>
             <td>{{ url[0] }}</td>
-            <td><a href="{{ url_for('show_url', id=url[0]) }}">{{ url[1] }}</a></td>
+            <td><a href="{{ url_for('routes.show_url', id=url[0]) }}">{{ url[1] }}</a></td>
             <td>{{ url[2] }}</td>
             <td>
                 {% if url[4] %}
@@ -33,6 +33,6 @@
     </tbody>
   </table>
 
-  <a href="{{ url_for('index') }}" class="btn btn-primary">Добавить новый URL</a>
+  <a href="{{ url_for('routes.index') }}" class="btn btn-primary">Добавить новый URL</a>
 </div>
 {% endblock %}

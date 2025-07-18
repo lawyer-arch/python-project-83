@@ -7,20 +7,43 @@
   <h2>Сайт: {{ url[1] }}</h2>
 
 
-  <dl class="row">
-    <dt class="col-sm-3">ID</dt>    
-    <dd class="col-sm-9">{{ url[0] }}</dd>
+  <div class="row g-3">
+    <div class="col-md-12">
+        <div class="card p-0 border-0">
+            <div class="card-body p-0">
+                <table class="table table-bordered border-0 m-0 w-100">
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold col-6" style="width: 50%;">ID:</td>
+                            <td class="col-6" style="width: 50%;">
+                                {{ url.id }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold col-6" style="width: 50%;">Имя:</td>
+                            <td class="col-6" style="width: 50%;">
+                                {{ url[1] }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold col-6" style="width: 50%;">Дата добавления:</td>
+                            <td class="col-6" style="width: 50%;">
+                                {{ url.created_at }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+  </div>
 
-    <dt class="col-sm-3">URL</dt>
-    <dd class="col-sm-9">{{ url[1] }}</dd>
-
-    <dt class="col-sm-3">Дата добавления</dt>
-    <dd class="col-sm-9">{{ url[2] }}</dd>
-  </dl>
-
-
+    <h3 class="mt-5">Проверки</h3>
+  <!-- Форма запуска проверки -->
+  <form method="post" action="{{ url_for('routes.check_url', id=url[0]) }}" class="mt-4">
+    <input type="submit" class="btn btn-primary" value="Запустить проверку">
+  </form>
   <!-- Таблица проверок -->
-  <h3 class="mt-5">Проверки</h3>
   <table class="table table-bordered table-hover mt-2" data-test="checks">
   <thead>
       <tr>
@@ -44,11 +67,5 @@
       </tr>
       {% endfor %}
   </tbody>
-</table>
-
-<!-- Форма запуска проверки -->
-<form method="post" action="{{ url_for('check_url', id=url[0]) }}" class="mt-4">
-  <input type="submit" class="btn btn-primary" value="Запустить проверку">
-</form>
-
+  </table>
 {% endblock %}
