@@ -28,6 +28,7 @@ routes = Blueprint('routes', __name__)
 def index():
     if request.method == 'POST':
         url_input = request.form.get('url')
+
         if not url_input:
             flash('URL не может быть пустым', 'danger')
             return redirect(url_for('routes.index'))
@@ -38,11 +39,14 @@ def index():
 
         try:
             url_id, is_new = add_url_db(url_input)
+
             if is_new:
                 flash('Страница успешно добавлена', 'success')
+                return redirect(url_for('routes.show_url', id=url_id))
             else:
-                flash('Страница уже существует', 'warning')
-            return redirect(url_for('routes.show_url', id=url_id))
+                flash('Страница уже существует', 'info')
+                return redirect(url_for('routes.urls'))
+
         except Exception:
             flash('Произошла ошибка при добавлении URL', 'danger')
             return redirect(url_for('routes.index'))
@@ -71,10 +75,10 @@ def add_url_route():
         else:
             flash('Страница уже существует', 'info')
         return redirect(url_for('routes.show_url', id=url_id))
-    except ValueError as e:
-        flash(str(e), 'danger')
-        response = make_response(render_template('index.html'), 422)
-        return response
+    except ValueError:
+        flash("Некорректный URL", 'danger')
+        urls = get_all_urls()
+        return make_response(render_template('urls.html', urls=urls), 422)
     except Exception:
         flash('Ошибка при добавлении URL в базу', 'danger')
         return redirect(url_for('routes.urls'))

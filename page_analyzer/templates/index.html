@@ -4,13 +4,14 @@
 
 <!-- Основной контейнер формы -->
 {% block content %}
+
 <div class="row">
   <div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 bg-light p-5">
     <h1 class="display-3">Анализатор страниц</h1>
     <p class="lead">Бесплатно проверяйте сайты на SEO-пригодность</p>
     
     <!-- Форма ввода URL -->
-    <form action="{{ url_for('routes.add_url_route') }}" method="post" class="d-flex justify-content-center">
+    <form action="{{ url_for('routes.index') }}" method="post" class="d-flex justify-content-center">
       <!-- Поля формы -->
       <label for="url" class="visually-hidden">URL для проверки</label>
       <input
