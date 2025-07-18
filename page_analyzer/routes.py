@@ -45,7 +45,7 @@ def index():
                 return redirect(url_for('routes.show_url', id=url_id))
             else:
                 flash('Страница уже существует', 'info')
-                return redirect(url_for('routes.urls'))
+                return redirect(url_for('routes.show_url', id=url_id)) 
 
         except Exception:
             flash('Произошла ошибка при добавлении URL', 'danger')
@@ -74,7 +74,7 @@ def add_url_route():
             flash('Страница успешно добавлена', 'success')
         else:
             flash('Страница уже существует', 'info')
-        return redirect(url_for('routes.show_url', id=url_id))
+            return redirect(url_for('routes.show_url', id=url_id))
     except ValueError:
         flash("Некорректный URL", 'danger')
         urls = get_all_urls()
