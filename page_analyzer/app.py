@@ -1,6 +1,8 @@
 import os
-from flask import Flask
+
 from dotenv import load_dotenv
+from flask import Flask
+
 from page_analyzer.routes import routes
 
 load_dotenv()

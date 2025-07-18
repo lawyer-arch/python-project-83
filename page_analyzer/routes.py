@@ -1,18 +1,13 @@
-from flask import (
-                Blueprint,
-                render_template,
-                request,
-                redirect,
-                url_for,
-                flash
-            )
 import requests
-
-from page_analyzer.data_base import (
-    add_url, get_all_urls, get_url_with_checks,
-    insert_check_result, get_connection
-)
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 from page_analyzer.parser import parse_html
+from page_analyzer.data_base import (
+    add_url,
+    get_all_urls,
+    get_connection,
+    get_url_with_checks,
+    insert_check_result,
+)
 
 
 routes = Blueprint('routes', __name__)
@@ -31,7 +26,7 @@ def index():
             return redirect(url_for('routes.show_url', id=url_id))
         except ValueError:
             flash("Некорректный URL", 'danger')
-        except Exception as e:
+        except Exception:
             flash("Произошла ошибка при проверке", 'danger')
         return redirect(url_for('routes.index'))
     return render_template('index.html')
@@ -69,14 +64,21 @@ def check_url(id):
             response = requests.get(url, timeout=10)
             response.raise_for_status()
             h1, title, description = parse_html(response.text)
-            insert_check_result(id, response.status_code, h1, title, description)
+            insert_check_result(
+                                id,
+                                response.status_code,
+                                h1,
+                                title,
+                                description
+            )
+            
             flash('Страница успешно проверена', 'success')
         except requests.RequestException as e:
             status_code = getattr(e.response, 'status_code', 0)
             insert_check_result(id, status_code, None, None, None)
-            flash('Ошибка при проверке', 'danger')
+            flash('Произошла ошибка при проверке', 'danger')
 
-    except Exception as e:
+    except Exception:
         flash('Произошла ошибка при проверке', 'danger')
 
     return redirect(url_for('routes.show_url', id=id))

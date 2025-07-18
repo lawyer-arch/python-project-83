@@ -1,8 +1,10 @@
 import os
 from datetime import datetime
+
 import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
+
 from page_analyzer.url_validator import is_valid_url, normalize_url
 
 load_dotenv()
