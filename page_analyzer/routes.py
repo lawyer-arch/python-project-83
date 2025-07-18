@@ -53,11 +53,11 @@ def add_url_route():
     url = request.form.get('url')
     if not url:
         flash('URL не может быть пустым', 'danger')
-        return redirect(url_for('routes.index'))
+        return redirect(url_for('routes.urls'))
 
     if not is_valid_url(url):
         flash('Некорректный URL', 'danger')
-        return redirect(url_for('routes.index'))
+        return redirect(url_for('routes.urls'))
 
     try:
         conn = get_connection()
@@ -75,7 +75,7 @@ def add_url_route():
                     url_id = existing_url[0]
     except Exception:
         flash('Ошибка при добавлении URL в базу', 'danger')
-        return redirect(url_for('routes.index'))
+        return redirect(url_for('routes.urls'))
 
     flash('Страница успешно добавлена', 'success')
     return redirect(url_for('routes.show_url', id=url_id))
