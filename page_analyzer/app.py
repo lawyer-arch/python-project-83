@@ -21,8 +21,16 @@ def get_connection():
     return psycopg2.connect(DATABASE_URL)
 
 
+def is_valid_url(url):
+    try:
+        result = urlparse(url)
+        return all([result.scheme in ['http', 'https'], result.netloc])
+    except Exception:
+        return False
+
+
 def add_url(url: str) -> tuple[int, bool]:
-    if not validators.url(url) or len(url) > 255:
+    if len(url) > 255 or not is_valid_url(url):
         raise ValueError("Произошла ошибка при проверке")
 
     parsed = urlparse(url)
@@ -59,8 +67,12 @@ def index():
             else:
                 flash('Страница уже существует', 'warning')
             return redirect(url_for('show_url', id=url_id))
-        except ValueError as e:
-            flash(str(e), 'danger')
+        except ValueError:
+            flash("Не корректный URL", 'danger')
+            return redirect(url_for('index'))
+        except Exception as e:
+            app.logger.error(f"Необработанная ошибка: {str(e)}")
+            flash("Произошла ошибка при проверке", 'danger')
             return redirect(url_for('index'))
 
     return render_template('index.html')
