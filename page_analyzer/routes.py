@@ -74,7 +74,12 @@ def add_url_route():
             flash('Страница успешно добавлена', 'success')
         else:
             flash('Страница уже существует', 'info')
-            return redirect(url_for('routes.show_url', id=url_id))
+        return redirect(url_for('routes.show_url', id=url_id))
+        
+    except ValueError:
+        flash("Некорректный URL", 'danger')
+        return make_response(render_template('index.html'), 422)
+
     except ValueError:
         flash("Некорректный URL", 'danger')
         urls = get_all_urls()
