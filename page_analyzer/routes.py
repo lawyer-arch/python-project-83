@@ -65,7 +65,8 @@ def add_url_route():
         return redirect(url_for('routes.show_url', id=url_id))
     except ValueError as e:
         flash(str(e), 'danger')
-        return redirect(url_for('routes.urls'))
+        response = make_response(render_template('index.html'), 422)
+        return response
     except Exception:
         flash('Ошибка при добавлении URL в базу', 'danger')
         return redirect(url_for('routes.urls'))
