@@ -1,6 +1,6 @@
 import requests
 from flask import Blueprint, flash, redirect, render_template, request, url_for
-from page_analyzer.parser import parse_html
+
 from page_analyzer.data_base import (
     add_url,
     get_all_urls,
@@ -8,6 +8,8 @@ from page_analyzer.data_base import (
     get_url_with_checks,
     insert_check_result,
 )
+from page_analyzer.parser import parse_html
+from page_analyzer.url_validator import is_valid_url
 
 
 routes = Blueprint('routes', __name__)
@@ -36,6 +38,41 @@ def index():
 def urls():
     urls_list = get_all_urls()
     return render_template('urls.html', urls=urls_list)
+
+
+@routes.route('/urls', methods=['POST'])
+def add_url():
+    url = request.form.get('url')
+    if not url:
+        flash('URL не может быть пустым', 'danger')
+        return redirect(url_for('routes.index'))
+
+    
+
+
+    if not is_valid_url(url):
+        flash('Некорректный URL', 'danger')
+        return redirect(url_for('routes.index'))
+
+    
+    existing_url = None
+    try:
+        conn = get_connection()
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT id FROM urls WHERE name = %s", (url,))
+                existing_url = cur.fetchone()
+                if not existing_url:
+                    cur.execute("INSERT INTO urls (name) VALUES (%s) RETURNING id", (url,))
+                    url_id = cur.fetchone()[0]
+                else:
+                    url_id = existing_url[0]
+    except Exception as e:
+        flash('Ошибка при добавлении URL в базу', 'danger')
+        return redirect(url_for('routes.index'))
+
+    flash('Страница успешно добавлена', 'success')
+    return redirect(url_for('routes.show_url', id=url_id))
 
 
 @routes.route('/urls/<int:id>')
