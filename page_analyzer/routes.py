@@ -54,32 +54,21 @@ def add_url_route():
 
     if not url:
         flash('URL не может быть пустым', 'danger')
-        return render_template('urls.html', urls=get_all_urls()), 422
-
-    if not is_valid_url(url):
-        flash('Некорректный URL', 'danger')
-        return render_template('urls.html', urls=get_all_urls()), 422
+        return redirect(url_for('routes.urls'))
 
     try:
-        conn = get_connection()
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute("SELECT id FROM urls WHERE name = %s", (url,))
-                existing_url = cur.fetchone()
-                if not existing_url:
-                    cur.execute(
-                        "INSERT INTO urls (name) VALUES (%s) RETURNING id",
-                        (url,)
-                    )
-                    url_id = cur.fetchone()[0]
-                else:
-                    url_id = existing_url[0]
+        url_id, is_new = add_url_db(url)
+        if is_new:
+            flash('Страница успешно добавлена', 'success')
+        else:
+            flash('Страница уже существует', 'info')
+        return redirect(url_for('routes.show_url', id=url_id))
+    except ValueError as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('routes.urls'))
     except Exception:
         flash('Ошибка при добавлении URL в базу', 'danger')
         return redirect(url_for('routes.urls'))
-
-    flash('Страница успешно добавлена', 'success')
-    return redirect(url_for('routes.show_url', id=url_id))
 
 
 @routes.route('/urls/<int:id>')
