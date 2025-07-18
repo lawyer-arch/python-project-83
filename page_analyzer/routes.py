@@ -48,7 +48,6 @@ def urls():
     return render_template('urls.html', urls=urls_list)
 
 
-# Переименовали функцию, чтобы не перекрывать add_url из data_base
 @routes.route('/urls', methods=['POST'])
 def add_url_route():
     url = request.form.get('url')
@@ -58,7 +57,7 @@ def add_url_route():
 
     if not is_valid_url(url):
         flash('Некорректный URL', 'danger')
-        return redirect(url_for('routes.index'))
+        return redirect(url_for('routes.urls'))
 
     try:
         conn = get_connection()
