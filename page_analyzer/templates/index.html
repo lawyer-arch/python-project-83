@@ -4,31 +4,35 @@
 
 <!-- Основной контейнер формы -->
 {% block content %}
-
-<div class="row">
-  <div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 bg-light p-5">
-    <h1 class="display-3">Анализатор страниц</h1>
-    <p class="lead">Бесплатно проверяйте сайты на SEO-пригодность</p>
+<main class="flex-grow-1">
+  <div class="container-lg mt-3">
+    <h1></h1>
+      <div class="row">
+        <div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 bg-light p-5">
+          <h1 class="display-3">Анализатор страниц</h1>
+          <p class="lead">Бесплатно проверяйте сайты на SEO-пригодность</p>
     
-    <!-- Форма ввода URL -->
-    <form action="{{ url_for('routes.add_url_route') }}" method="post" class="d-flex justify-content-center">
-      <!-- Поля формы -->
-      <label for="url" class="visually-hidden">URL для проверки</label>
-      <input
-        type="text"
-        id="url"
-        name="url"
-        placeholder="https://www.example.com"
-        class="form-control form-control-lg"
-        required
-        maxlength="255"
-      />
-      <input
-        type="submit"
-        class="btn btn-primary btn-lg ms-3 px-5 text-uppercase mx-3"
-        value="Проверить"
-      />
-    </form>
+            <!-- Форма ввода URL -->
+            <form action="{{ url_for('routes.add_url_route') }}" method="post" class="d-flex justify-content-center">
+              <!-- Поля формы -->
+              <label for="url" class="visually-hidden">URL для проверки</label>
+                <input
+                type="text"
+                id="url"
+                name="url"
+                placeholder="https://www.example.com"
+                class="form-control form-control-lg"
+                required
+                maxlength="255"
+                />
+                <input
+                type="submit"
+                class="btn btn-primary btn-lg ms-3 px-5 text-uppercase mx-3"
+                value="Проверить"
+                />
+            </form>
+        </div>
+      </div>
   </div>
-</div>
+</main>
 {% endblock %}
