@@ -7,6 +7,7 @@ from flask import (
     render_template,
     request,
     url_for,
+    abort
 )
 
 from page_analyzer.data_base import (
@@ -24,33 +25,8 @@ from page_analyzer.url_validator import is_valid_url
 routes = Blueprint('routes', __name__)
 
 
-@routes.route('/', methods=['GET', 'POST'])
+@routes.route('/', methods=['GET'], endpoint='index_get')
 def index():
-    if request.method == 'POST':
-        url_input = request.form.get('url')
-
-        if not url_input:
-            flash('URL не может быть пустым', 'danger')
-            return redirect(url_for('routes.index'))
-
-        if not is_valid_url(url_input):
-            flash('Некорректный URL', 'danger')
-            return redirect(url_for('routes.index'))
-
-        try:
-            url_id, is_new = add_url_db(url_input)
-
-            if is_new:
-                flash('Страница успешно добавлена', 'success')
-                return redirect(url_for('routes.show_url', id=url_id))
-            else:
-                flash('Страница уже существует', 'info')
-                return redirect(url_for('routes.show_url', id=url_id)) 
-
-        except Exception:
-            flash('Произошла ошибка при добавлении URL', 'danger')
-            return redirect(url_for('routes.index'))
-
     return render_template('index.html')
 
 
@@ -63,28 +39,23 @@ def urls():
 @routes.route('/urls', methods=['POST'])
 def add_url_route():
     url = request.form.get('url')
-
-    if not url:
-        flash('URL не может быть пустым', 'danger')
-        return redirect(url_for('routes.urls'))
+    errors = is_valid_url(url)
+    
+    if errors:
+        flash("Некорректный URL", 'danger')
+        return make_response(render_template('index.html'), 422)
 
     try:
         url_id, is_new = add_url_db(url)
         if is_new:
             flash('Страница успешно добавлена', 'success')
+            return redirect(url_for('routes.show_url', id=url_id))
         else:
             flash('Страница уже существует', 'info')
-        return redirect(url_for('routes.show_url', id=url_id))
-        
-    except ValueError:
-        flash("Некорректный URL", 'danger')
-        return make_response(render_template('index.html'), 422)
+            return redirect(url_for('routes.show_url', id=url_id))
 
-    except ValueError:
-        flash("Некорректный URL", 'danger')
-        urls = get_all_urls()
-        return make_response(render_template('urls.html', urls=urls), 422)
-    except Exception:
+    except Exception as e:
+        print(f"Ошибка при добавлении URL в базу: {e}")
         flash('Ошибка при добавлении URL в базу', 'danger')
         return redirect(url_for('routes.urls'))
 
@@ -92,9 +63,10 @@ def add_url_route():
 @routes.route('/urls/<int:id>')
 def show_url(id):
     url, checks = get_url_with_checks(id)
+  
     if not url:
-        flash('Страница не найдена', 'danger')
-        return redirect(url_for('routes.urls'))
+        abort(404)
+  
     return render_template('url.html', url=url, checks=checks)
 
 

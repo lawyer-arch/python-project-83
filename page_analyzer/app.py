@@ -4,12 +4,15 @@ from dotenv import load_dotenv
 from flask import Flask
 
 from page_analyzer.routes import routes
+from page_analyzer.error_handlers import register_error_handlers
 
 load_dotenv()
 
 app = Flask(__name__)
+
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
+register_error_handlers(app)
 app.register_blueprint(routes)
 
 if __name__ == '__main__':

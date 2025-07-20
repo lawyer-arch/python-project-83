@@ -16,7 +16,8 @@ def get_connection():
 
 
 def add_url(url: str) -> tuple[int, bool]:
-    if len(url) > 255 or not is_valid_url(url):
+    errors = is_valid_url(url)
+    if errors:
         raise ValueError("Произошла ошибка при проверке")
 
     normalized_url = normalize_url(url)
