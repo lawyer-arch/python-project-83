@@ -1,13 +1,13 @@
 import requests
 from flask import (
     Blueprint,
+    abort,
     flash,
     make_response,
     redirect,
     render_template,
     request,
     url_for,
-    abort
 )
 
 from page_analyzer.data_base import (

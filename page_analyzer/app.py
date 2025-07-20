@@ -3,8 +3,8 @@ import os
 from dotenv import load_dotenv
 from flask import Flask
 
-from page_analyzer.routes import routes
 from page_analyzer.error_handlers import register_error_handlers
+from page_analyzer.routes import routes
 
 load_dotenv()
 
