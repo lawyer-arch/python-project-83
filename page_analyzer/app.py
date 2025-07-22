@@ -8,9 +8,9 @@ from page_analyzer.routes import routes
 
 load_dotenv()
 
-app = Flask(__name__) # NOSONAR
+app = Flask(__name__)  # NOSONAR
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY') # NOSONAR
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')  # NOSONAR
 
 register_error_handlers(app)
 app.register_blueprint(routes)
